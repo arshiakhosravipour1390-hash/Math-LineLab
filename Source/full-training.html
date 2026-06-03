@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>📚 آموزش هم‌نهشتی مثلث‌ها - Math LineLab</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Vazir', 'B Nazanin', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0b1a2e, #1a3b5c);
+            min-height: 100vh;
+            padding: 30px;
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* ========== منوی همبرگری ========== */
+        .menu-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            cursor: pointer;
+            z-index: 1001;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+        }
+        
+        .menu-toggle:hover {
+            transform: scale(1.1);
+        }
+        
+        .menu-toggle span {
+            width: 25px;
+            height: 3px;
+            background: white;
+            border-radius: 3px;
+            transition: all 0.3s;
+        }
+        
+        .menu-toggle.active span:nth-child(1) {
+            transform: rotate(45deg) translate(8px, 8px);
+        }
+        
+        .menu-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+        
+        .menu-toggle.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(8px, -8px);
+        }
+        
+        .side-menu {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(180deg, #1a2f3f, #0b1a2e);
+            z-index: 1000;
+            transition: right 0.3s ease;
+            padding: 80px 20px 30px;
+            box-shadow: -5px 0 30px rgba(0,0,0,0.5);
+            border-left: 2px solid #f39c12;
+        }
+        
+        .side-menu.open {
+            right: 0;
+        }
+        
+        .side-menu a {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 20px;
+            color: white;
+            text-decoration: none;
+            font-size: 1.1rem;
+            border-radius: 15px;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .side-menu a:hover {
+            background: rgba(243,156,18,0.3);
+            transform: translateX(-10px);
+        }
+        
+        .side-menu a span {
+            font-size: 1.5rem;
+        }
+        
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+            display: none;
+        }
+        
+        .overlay.show {
+            display: block;
+        }
+
+        /* ========== کنترل موزیک ========== */
+        .music-control {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(8px);
+            padding: 5px 10px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            z-index: 100;
+            border: 1px solid #f39c12;
+        }
+        
+        .music-btn {
+            background: none;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            color: #f39c12;
+            transition: all 0.2s;
+            width: 26px;
+            height: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+        
+        .music-btn:hover {
+            background: rgba(243,156,18,0.3);
+            transform: scale(1.05);
+        }
+        
+        .volume-slider {
+            width: 50px;
+            height: 3px;
+            -webkit-appearance: none;
+            background: rgba(255,255,255,0.3);
+            border-radius: 3px;
+            outline: none;
+            cursor: pointer;
+        }
+        
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #f39c12;
+            cursor: pointer;
+        }
+        
+        #trackName {
+            color: #f39c12;
+            font-size: 0.55rem;
+            max-width: 80px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 50px;
+            padding: 40px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 60px;
+            backdrop-filter: blur(10px);
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            background: linear-gradient(135deg, #f1c40f, #e67e22);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .definition-section {
+            background: white;
+            border-radius: 50px;
+            padding: 50px;
+            margin-bottom: 50px;
+        }
+
+        .definition-title {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .definition-content {
+            font-size: 1.2rem;
+            line-height: 2;
+            color: #34495e;
+        }
+
+        .highlight-box {
+            background: #f0f9ff;
+            border-right: 8px solid #3498db;
+            padding: 25px;
+            border-radius: 20px;
+            margin: 30px 0;
+        }
+
+        .animation-section {
+            background: linear-gradient(135deg, #1e2b3a, #2c3e50);
+            border-radius: 60px;
+            padding: 60px;
+            margin: 50px 0;
+            color: white;
+            text-align: center;
+        }
+
+        .animation-title {
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+        }
+
+        .animation-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 50px;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+        }
+
+        .triangle-box {
+            text-align: center;
+        }
+
+        .triangle-label {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+
+        .triangle-label .blue {
+            color: #3498db;
+        }
+
+        .triangle-label .green {
+            color: #2ecc71;
+        }
+
+        .triangle-canvas {
+            background: rgba(255,255,255,0.05);
+            border-radius: 30px;
+            padding: 20px;
+            width: 300px;
+            height: 250px;
+        }
+
+        .match-animation {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .match-icon {
+            font-size: 3rem;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(20px); }
+        }
+
+        .match-steps {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin: 30px 0;
+        }
+
+        .step-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            background: white;
+            color: #2c3e50;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .step-btn:hover {
+            transform: scale(1.1);
+            background: #f39c12;
+            color: white;
+        }
+
+        .step-btn.active {
+            background: #f39c12;
+            color: white;
+            box-shadow: 0 0 20px #f39c12;
+        }
+
+        .auto-play-btn {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .auto-play-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(155,89,182,0.4);
+        }
+
+        .auto-play-btn.playing {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+
+        .step-description {
+            font-size: 1.3rem;
+            color: white;
+            background: rgba(255,255,255,0.1);
+            padding: 20px 40px;
+            border-radius: 50px;
+            margin-top: 20px;
+        }
+
+        .cases-section {
+            margin: 60px 0;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            color: white;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .cases-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
+
+        .case-card {
+            background: white;
+            border-radius: 40px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            transition: all 0.4s;
+        }
+
+        .case-card:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 30px 60px rgba(243,156,18,0.4);
+        }
+
+        .case-header {
+            padding: 25px;
+            color: white;
+            text-align: center;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .case-header.sss { background: linear-gradient(135deg, #3498db, #2980b9); }
+        .case-header.sas { background: linear-gradient(135deg, #e67e22, #d35400); }
+        .case-header.asa { background: linear-gradient(135deg, #27ae60, #2ecc71); }
+        .case-header.wz { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
+        .case-header.wz2 { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+
+        .case-body {
+            padding: 30px;
+        }
+
+        .case-name {
+            font-size: 1.8rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .case-desc {
+            color: #7f8c8d;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .case-formula {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 20px;
+            font-size: 1.2rem;
+            text-align: center;
+            color: #2c3e50;
+            border-right: 5px solid #3498db;
+        }
+
+        .case-card:nth-child(4) { grid-column: 1 / span 1; }
+        .case-card:nth-child(5) { grid-column: 2 / span 1; }
+
+        .quiz-section {
+            background: white;
+            border-radius: 50px;
+            padding: 50px;
+            margin: 50px 0;
+        }
+
+        .quiz-title {
+            font-size: 2.2rem;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quiz-question {
+            background: #f8fafc;
+            border-radius: 30px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .question-text {
+            font-size: 1.3rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            line-height: 1.8;
+        }
+
+        .quiz-options {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .quiz-option {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+            border: 2px solid #e0e0e0;
+            color: #2c3e50;
+            text-align: right;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .quiz-option:hover {
+            border-color: #3498db;
+            transform: scale(1.05);
+        }
+
+        .quiz-option.correct {
+            background: #27ae60;
+            color: white;
+            border-color: #27ae60;
+        }
+
+        .quiz-option.wrong {
+            background: #e74c3c;
+            color: white;
+            border-color: #e74c3c;
+        }
+
+        .quiz-feedback {
+            margin-top: 15px;
+            padding: 20px;
+            border-radius: 15px;
+            display: none;
+            font-size: 1rem;
+            line-height: 1.8;
+        }
+
+        .quiz-feedback.correct {
+            background: #d4edda;
+            color: #155724;
+            display: block;
+        }
+
+        .quiz-feedback.wrong {
+            background: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+
+        .note-section {
+            background: #fef9e7;
+            border-radius: 40px;
+            padding: 40px;
+            margin: 50px 0;
+            border-right: 10px solid #f39c12;
+        }
+
+        .note-title {
+            font-size: 2rem;
+            color: #c0392b;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .note-content {
+            font-size: 1.2rem;
+            line-height: 2;
+            color: #2c3e50;
+        }
+
+        .warning-box {
+            background: #f8d7da;
+            border: 3px solid #e74c3c;
+            border-radius: 30px;
+            padding: 30px;
+            margin-top: 30px;
+        }
+
+        .warning-box p {
+            color: #721c24;
+            font-weight: bold;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            margin: 50px 0;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            padding: 20px 50px;
+            border-radius: 60px;
+            text-decoration: none;
+            font-size: 1.3rem;
+            font-weight: bold;
+            transition: all 0.4s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .back-btn {
+            background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+            color: white;
+        }
+
+        .quiz-start-btn {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        footer {
+            text-align: center;
+            color: white;
+            margin-top: 50px;
+        }
+
+        @media (max-width: 1200px) {
+            .cases-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .case-card:nth-child(4),
+            .case-card:nth-child(5) {
+                grid-column: auto;
+            }
+        }
+
+        @media (max-width: 800px) {
+            .cases-grid {
+                grid-template-columns: 1fr;
+            }
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            .music-control {
+                padding: 4px 8px;
+                gap: 3px;
+            }
+            .music-btn {
+                width: 22px;
+                height: 22px;
+                font-size: 0.85rem;
+            }
+            .volume-slider {
+                width: 35px;
+            }
+            #trackName {
+                max-width: 55px;
+                font-size: 0.5rem;
+            }
+        }
+    </style>
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v33.003/dist/font-face.css" rel="stylesheet">
+</head>
+<body>
+
+    <!-- دکمه منو همبرگری -->
+    <div class="menu-toggle" id="menuToggle">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+    
+    <!-- منوی کناری -->
+    <div class="side-menu" id="sideMenu">
+        <a href="../Main Page.html"><span>🏠</span> صفحه اصلی</a>
+        <a href="#" onclick="scrollToSection('animation')"><span>🔄</span> انیمیشن هم نهشتی</a>
+        <a href="#" onclick="scrollToSection('cases')"><span>📐</span> حالت‌های هم‌نهشتی</a>
+        <a href="#" onclick="scrollToSection('quiz')"><span>📝</span> خودت رو امتحان کن</a>
+    </div>
+    <div class="overlay" id="overlay"></div>
+
+    <!-- کنترل موزیک -->
+    <div class="music-control" id="musicControl">
+        <button class="music-btn" id="musicToggle">🔇</button>
+        <button class="music-btn" id="nextTrackBtn">⏩</button>
+        <span id="trackName">آهنگ</span>
+        <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1" step="0.01" value="0.1">
+    </div>
+
+    <div class="main-container">
+        <div class="header">
+            <h1>📚 آموزش هم‌نهشتی مثلث‌ها</h1>
+            <p>یادگیری عمیق با انیمیشن‌های تعاملی</p>
+        </div>
+
+        <div class="definition-section">
+            <h2 class="definition-title">
+                <span>🔺</span>
+                هم‌نهشتی مثلث‌ها یعنی چی؟
+            </h2>
+            <div class="definition-content">
+                <p>دو مثلث را <strong>هم‌نهشت</strong> گویند، اگر اضلاع متناظر آن‌ها دارای طول‌های یکسان و زاویه‌های متناظر نیز با اندازه‌های برابر باشند.</p>
+                
+                <div class="highlight-box">
+                    <p style="font-size: 1.5rem; text-align: center; direction: ltr;">
+                        △ABC ≅ △DEF
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="animation-section" id="animation">
+            <h2 class="animation-title">🔄 انیمیشن منطبق شدن مثلث‌ها (حالت دو ضلع و زاویه بین)</h2>
+            
+            <div class="animation-container">
+                <div class="triangle-box">
+                    <div class="triangle-label">
+                        <span class="blue">مثلث اول (ABC)</span>
+                    </div>
+                    <canvas id="triangle1" class="triangle-canvas" width="300" height="250"></canvas>
+                </div>
+                
+                <div class="match-animation">
+                    <div class="match-icon" id="matchIcon">➡️</div>
+                    <div class="match-steps">
+                        <button class="step-btn" onclick="playStep(0)">۱</button>
+                        <button class="step-btn" onclick="playStep(1)">۲</button>
+                        <button class="step-btn" onclick="playStep(2)">۳</button>
+                        <button class="step-btn" onclick="playStep(3)">۴</button>
+                    </div>
+                    <button class="auto-play-btn" id="autoPlayBtn" onclick="toggleAutoPlay()">
+                        <span>▶️</span> پخش خودکار
+                    </button>
+                </div>
+                
+                <div class="triangle-box">
+                    <div class="triangle-label">
+                        <span class="green">مثلث دوم (DEF)</span>
+                    </div>
+                    <canvas id="triangle2" class="triangle-canvas" width="300" height="250"></canvas>
+                </div>
+            </div>
+
+            <div class="step-description" id="stepDescription">
+                مرحله ۱: ضلع اول (AB) با ضلع متناظر (DE) برابر است
+            </div>
+        </div>
+
+        <div class="cases-section" id="cases">
+            <h2 class="section-title">📐 حالت‌های هم‌نهشتی مثلث‌ها</h2>
+            
+            <div class="cases-grid">
+                <div class="case-card">
+                    <div class="case-header sss">ض ض ض</div>
+                    <div class="case-body">
+                        <div class="case-name">سه ضلع</div>
+                        <div class="case-desc">اگر سه ضلع یک مثلث با سه ضلع مثلث دیگر برابر باشند، آن دو مثلث هم‌نهشت هستند.</div>
+                        <div class="case-formula">AB = DE<br>BC = EF<br>AC = DF</div>
+                    </div>
+                </div>
+                <div class="case-card">
+                    <div class="case-header sas">ض ز ض</div>
+                    <div class="case-body">
+                        <div class="case-name">دو ضلع و زاویه بین</div>
+                        <div class="case-desc">اگر دو ضلع و زاویه بین آنها در دو مثلث برابر باشد، آن دو مثلث هم‌نهشت هستند.</div>
+                        <div class="case-formula">AB = DE<br>زاویه A = زاویه D<br>AC = DF</div>
+                    </div>
+                </div>
+                <div class="case-card">
+                    <div class="case-header asa">ز ض ز</div>
+                    <div class="case-body">
+                        <div class="case-name">دو زاویه و ضلع بین</div>
+                        <div class="case-desc">اگر دو زاویه و ضلع بین آنها در دو مثلث برابر باشد، آن دو مثلث هم‌نهشت هستند.</div>
+                        <div class="case-formula">زاویه A = زاویه D<br>AB = DE<br>زاویه B = زاویه E</div>
+                    </div>
+                </div>
+                <div class="case-card">
+                    <div class="case-header wz">و ض</div>
+                    <div class="case-body">
+                        <div class="case-name">وتر و یک ضلع</div>
+                        <div class="case-desc">در مثلث قائم‌الزاویه، اگر وتر و یک ضلع برابر باشند، دو مثلث هم‌نهشت هستند.</div>
+                        <div class="case-formula">زاویه قائمه = ۹۰°<br>وتر AC = وتر DF<br>ضلع AB = ضلع DE</div>
+                    </div>
+                </div>
+                <div class="case-card">
+                    <div class="case-header wz2">و ز</div>
+                    <div class="case-body">
+                        <div class="case-name">وتر و یک زاویه حاده</div>
+                        <div class="case-desc">در مثلث قائم‌الزاویه، اگر وتر و یک زاویه حاده برابر باشند، دو مثلث هم‌نهشت هستند.</div>
+                        <div class="case-formula">زاویه قائمه = ۹۰°<br>وتر AC = وتر DF<br>زاویه A = زاویه D</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="note-section">
+            <h2 class="note-title"><span>⚠️</span> نکته مهم: حالت‌هایی که هم‌نهشتی ایجاد نمی‌کنند</h2>
+            <div class="note-content">
+                <p>برابری سه زاویه (AAA) باعث هم‌نهشتی نمی‌شود! (مثلث‌ها مشابه هستند ولی هم‌نهشت نیستند)</p>
+                <p>دو ضلع و یک زاویه غیر بین (SSA) نیز هم‌نهشتی را تضمین نمی‌کند.</p>
+            </div>
+            <div class="warning-box">
+                <p style="font-size: 1.3rem;">❌ AAA : سه زاویه برابر → مثلث‌ها مشابهند، نه هم‌نهشت</p>
+                <p style="font-size: 1.3rem; margin-top: 15px;">❌ SSA : دو ضلع و زاویه غیر بین → کافی نیست</p>
+            </div>
+        </div>
+
+        <div class="quiz-section" id="quiz">
+            <h2 class="quiz-title"><span>📝</span> خودت رو امتحان کن</h2>
+            
+            <div class="quiz-question" id="q1">
+                <p class="question-text">۱. شرط اصلی برای همنهشتی دو شکل هندسی چیست و این شرط چه تفاوتی با تشابه دارد؟</p>
+                <div class="quiz-options">
+                    <button class="quiz-option" onclick="checkAnswer(1, '1', this)">تشابه و همنهشتی هر دو فقط بر اساس جابجایی تعریف می‌شوند.</button>
+                    <button class="quiz-option" onclick="checkAnswer(1, '2', this)">دو شکل فقط نیاز به داشتن زاویه‌های برابر دارند.</button>
+                    <button class="quiz-option" onclick="checkAnswer(1, '3', this)">همنهشتی یعنی دو شکل فقط دارای مساحت برابر باشند.</button>
+                    <button class="quiz-option" onclick="checkAnswer(1, '4', this)">دو شکل باید تمام اجزای متناظرشان برابر باشد تا همنهشت باشند.</button>
+                </div>
+                <div class="quiz-feedback" id="feedback1">
+                    <strong>پاسخ تشریحی:</strong> در همنهشتی، باید همه اجزای متناظر دو شکل مانند ضلع‌ها و زاویه‌ها کاملا باهم برابر باشند، اما در تشابه فقط لازم است زوایا برابر و اضلاع متناسب باشند نه الزاما برابر.
+                </div>
+            </div>
+
+            <div class="quiz-question" id="q2">
+                <p class="question-text">۲. کدام یک از حالت‌های زیر برای اثبات همنهشتی مثلث‌ها کافی نیست؟</p>
+                <div class="quiz-options">
+                    <button class="quiz-option" onclick="checkAnswer(2, '1', this)">ض ض ض (سه ضلع)</button>
+                    <button class="quiz-option" onclick="checkAnswer(2, '2', this)">ض ز ض (دو ضلع و زاویه بین)</button>
+                    <button class="quiz-option" onclick="checkAnswer(2, '3', this)">ز ض ز (دو زاویه و ضلع بین)</button>
+                    <button class="quiz-option" onclick="checkAnswer(2, '4', this)">AAA (سه زاویه)</button>
+                </div>
+                <div class="quiz-feedback" id="feedback2">
+                    <strong>پاسخ تشریحی:</strong> حالت AAA فقط برابری زاویه‌ها را نشان می‌دهد و الزاما اندازه اضلاع را تضمین نمی‌کند، بنابراین مثلث‌ها ممکن است فقط مشابه باشند نه هم‌نهشت.
+                </div>
+            </div>
+
+            <div class="quiz-question" id="q3">
+                <p class="question-text">۳. در مثلث قائم‌الزاویه، کدام حالت‌های خاص برای اثبات همنهشتی وجود دارد؟</p>
+                <div class="quiz-options">
+                    <button class="quiz-option" onclick="checkAnswer(3, '1', this)">و ض (وتر و یک ضلع) و و ز (وتر و یک زاویه حاده)</button>
+                    <button class="quiz-option" onclick="checkAnswer(3, '2', this)">فقط ض ز ض</button>
+                    <button class="quiz-option" onclick="checkAnswer(3, '3', this)">فقط ز ض ز</button>
+                    <button class="quiz-option" onclick="checkAnswer(3, '4', this)">هیچ حالت خاصی وجود ندارد</button>
+                </div>
+                <div class="quiz-feedback" id="feedback3">
+                    <strong>پاسخ تشریحی:</strong> در مثلث قائم‌الزاویه، علاوه بر سه حالت اصلی، دو حالت خاص "و ض" (وتر و یک ضلع) و "و ز" (وتر و یک زاویه حاده) نیز برای اثبات همنهشتی وجود دارد.
+                </div>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <a href="../Main Page.html" class="action-btn back-btn">
+                <span>🏠</span>
+                برگشت به صفحه اصلی
+            </a>
+            <a href="quiz-fasl3_1.html" class="action-btn quiz-start-btn">
+                <span>🎯</span>
+                شروع سوالات تعاملی
+            </a>
+        </div>
+
+        <footer>
+            <p>طراحی شده برای جشنواره نوجوان خوارزمی | محور ریاضی و فناوری اطلاعات</p>
+        </footer>
+    </div>
+
+    <audio id="bgMusic" loop preload="auto"></audio>
+
+    <script>
+        // ========== منوی همبرگری ==========
+        const menuToggle = document.getElementById('menuToggle');
+        const sideMenu = document.getElementById('sideMenu');
+        const overlay = document.getElementById('overlay');
+        
+        function toggleMenu() {
+            menuToggle.classList.toggle('active');
+            sideMenu.classList.toggle('open');
+            overlay.classList.toggle('show');
+        }
+        
+        menuToggle.addEventListener('click', toggleMenu);
+        overlay.addEventListener('click', toggleMenu);
+        
+        function scrollToSection(sectionId) {
+            toggleMenu();
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+        
+        // ========== موزیک ==========
+        const bgMusic = document.getElementById('bgMusic');
+        const musicToggle = document.getElementById('musicToggle');
+        const nextTrackBtn = document.getElementById('nextTrackBtn');
+        const trackNameSpan = document.getElementById('trackName');
+        const volumeSlider = document.getElementById('volumeSlider');
+        
+        let currentTrackIndex = 0;
+        let isMusicPlaying = false;
+        
+        const playlist = [
+            { name: "🎹 ملودی 1", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
+            { name: "🎸 ملودی 2", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
+            { name: "🪕 ملودی 3", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" },
+            { name: "🎻 ملودی 4", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3" }
+        ];
+        
+        function loadTrack(index) {
+            const track = playlist[index];
+            bgMusic.src = track.url;
+            trackNameSpan.textContent = track.name;
+            if (isMusicPlaying) {
+                bgMusic.play().catch(e => console.log("Playback error:", e));
+            }
+        }
+        
+        function nextTrack() {
+            currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
+            loadTrack(currentTrackIndex);
+        }
+        
+        bgMusic.addEventListener('ended', () => nextTrack());
+        
+        musicToggle.addEventListener('click', () => {
+            if (isMusicPlaying) {
+                bgMusic.pause();
+                musicToggle.innerHTML = '🔇';
+            } else {
+                if (!bgMusic.src || bgMusic.src === window.location.href) loadTrack(0);
+                bgMusic.play().catch(e => console.log("Audio play failed:", e));
+                musicToggle.innerHTML = '🔊';
+            }
+            isMusicPlaying = !isMusicPlaying;
+        });
+        
+        nextTrackBtn.addEventListener('click', () => {
+            nextTrack();
+            if (!isMusicPlaying) musicToggle.click();
+        });
+        
+        volumeSlider.addEventListener('input', (e) => {
+            bgMusic.volume = parseFloat(e.target.value);
+        });
+        
+        bgMusic.volume = 0.1;
+        volumeSlider.value = 0.1;
+        loadTrack(0);
+
+        // ========== انیمیشن مثلث‌ها (با حفظ تغییرات مرحله قبل) ==========
+        const canvas1 = document.getElementById('triangle1');
+        const canvas2 = document.getElementById('triangle2');
+        const ctx1 = canvas1.getContext('2d');
+        const ctx2 = canvas2.getContext('2d');
+        
+        let currentStep = 0;
+        let autoPlayInterval = null;
+        let isPlayingAnim = false;
+        
+        const steps = [
+            { desc: "مرحله ۱: ضلع اول (AB) با ضلع متناظر (DE) برابر است", highlight1: 'side1', highlight2: 'side1' },
+            { desc: "مرحله ۲: زاویه بین (زاویه A) با زاویه متناظر (زاویه D) برابر است", highlight1: 'side1+angle', highlight2: 'side1+angle' },
+            { desc: "مرحله ۳: ضلع دوم (AC) با ضلع متناظر (DF) برابر است", highlight1: 'side1+angle+side2', highlight2: 'side1+angle+side2' },
+            { desc: "✅ دو مثلث کاملاً منطبق شدند! (هم‌نهشت)", highlight1: 'all', highlight2: 'all' }
+        ];
+
+        function drawTriangle1(ctx, highlightPart) {
+            ctx.clearRect(0, 0, 300, 250);
+            const A = { x: 100, y: 180 }, B = { x: 200, y: 180 }, C = { x: 150, y: 70 };
+            let lineWidthNormal = 3, lineWidthHighlight = 8;
+            
+            // رنگ پیش‌فرض
+            let colorAB = '#3498db', colorAC = '#3498db', colorBC = '#3498db', colorAngle = '#3498db';
+            
+            // تنظیم رنگ‌ها بر اساس highlightPart (با حفظ تغییرات قبلی)
+            if (highlightPart.includes('side1') || highlightPart === 'all') {
+                colorAB = '#f39c12';
+            }
+            if (highlightPart.includes('angle') || highlightPart === 'all') {
+                colorAngle = '#e74c3c';
+            }
+            if (highlightPart.includes('side2') || highlightPart === 'all') {
+                colorAC = '#f39c12';
+            }
+            if (highlightPart === 'all') {
+                colorBC = '#f39c12';
+            }
+
+            // رسم ضلع AB
+            ctx.beginPath(); ctx.moveTo(A.x, A.y); ctx.lineTo(B.x, B.y);
+            ctx.strokeStyle = colorAB;
+            ctx.lineWidth = (highlightPart.includes('side1') || highlightPart === 'all') ? lineWidthHighlight : lineWidthNormal;
+            ctx.stroke();
+
+            // رسم ضلع AC
+            ctx.beginPath(); ctx.moveTo(A.x, A.y); ctx.lineTo(C.x, C.y);
+            ctx.strokeStyle = colorAC;
+            ctx.lineWidth = (highlightPart.includes('side2') || highlightPart === 'all') ? lineWidthHighlight : lineWidthNormal;
+            ctx.stroke();
+
+            // رسم ضلع BC
+            ctx.beginPath(); ctx.moveTo(B.x, B.y); ctx.lineTo(C.x, C.y);
+            ctx.strokeStyle = colorBC;
+            ctx.lineWidth = (highlightPart === 'all') ? lineWidthHighlight : lineWidthNormal;
+            ctx.stroke();
+
+            // رسم زاویه A
+            let angleAB = Math.atan2(B.y - A.y, B.x - A.x);
+            let angleAC = Math.atan2(C.y - A.y, C.x - A.x);
+            let startAngle = Math.min(angleAB, angleAC);
+            let endAngle = Math.max(angleAB, angleAC);
+            if (endAngle - startAngle > Math.PI) {
+                startAngle = endAngle;
+                endAngle = angleAB < angleAC ? angleAB + 2*Math.PI : angleAC + 2*Math.PI;
+            }
+            ctx.beginPath(); ctx.arc(A.x, A.y, 35, startAngle, endAngle);
+            ctx.strokeStyle = colorAngle;
+            ctx.lineWidth = (highlightPart.includes('angle') || highlightPart === 'all') ? 4 : 2;
+            ctx.stroke();
+
+            // نقاط
+            ctx.beginPath(); ctx.arc(A.x, A.y, 6, 0, 2*Math.PI); ctx.fillStyle = '#2c3e50'; ctx.fill();
+            ctx.beginPath(); ctx.arc(B.x, B.y, 6, 0, 2*Math.PI); ctx.fill();
+            ctx.beginPath(); ctx.arc(C.x, C.y, 6, 0, 2*Math.PI); ctx.fill();
+            
+            // برچسب‌ها با رنگ سفید برای دیده شدن
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 20px Vazir';
+            ctx.shadowColor = 'rgba(0,0,0,0.5)';
+            ctx.shadowBlur = 4;
+            ctx.fillText('A', A.x - 25, A.y - 15);
+            ctx.fillText('B', B.x + 15, B.y - 15);
+            ctx.fillText('C', C.x - 10, C.y - 25);
+            ctx.shadowBlur = 0;
+        }
+
+        function drawTriangle2(ctx, highlightPart) {
+            ctx.clearRect(0, 0, 300, 250);
+            const D = { x: 90, y: 180 }, E = { x: 190, y: 180 }, F = { x: 140, y: 70 };
+            let lineWidthNormal = 3, lineWidthHighlight = 8;
+            
+            let colorDE = '#2ecc71', colorDF = '#2ecc71', colorEF = '#2ecc71', colorAngle = '#2ecc71';
+            
+            if (highlightPart.includes('side1') || highlightPart === 'all') {
+                colorDE = '#f39c12';
+            }
+            if (highlightPart.includes('angle') || highlightPart === 'all') {
+                colorAngle = '#e74c3c';
+            }
+            if (highlightPart.includes('side2') || highlightPart === 'all') {
+                colorDF = '#f39c12';
+            }
+            if (highlightPart === 'all') {
+                colorEF = '#f39c12';
+            }
+
+            ctx.beginPath(); ctx.moveTo(D.x, D.y); ctx.lineTo(E.x, E.y);
+            ctx.strokeStyle = colorDE;
+            ctx.lineWidth = (highlightPart.includes('side1') || highlightPart === 'all') ? lineWidthHighlight : lineWidthNormal;
+            ctx.stroke();
+
+            ctx.beginPath(); ctx.moveTo(D.x, D.y); ctx.lineTo(F.x, F.y);
+            ctx.strokeStyle = colorDF;
+            ctx.lineWidth = (highlightPart.includes('side2') || highlightPart === 'all') ? lineWidthHighlight : lineWidthNormal;
+            ctx.stroke();
+
+            ctx.beginPath(); ctx.moveTo(E.x, E.y); ctx.lineTo(F.x, F.y);
+            ctx.strokeStyle = colorEF;
+            ctx.lineWidth = (highlightPart === 'all') ? lineWidthHighlight : lineWidthNormal;
+            ctx.stroke();
+
+            let angleDE = Math.atan2(E.y - D.y, E.x - D.x);
+            let angleDF = Math.atan2(F.y - D.y, F.x - D.x);
+            let startAngle = Math.min(angleDE, angleDF);
+            let endAngle = Math.max(angleDE, angleDF);
+            if (endAngle - startAngle > Math.PI) {
+                startAngle = endAngle;
+                endAngle = angleDE < angleDF ? angleDE + 2*Math.PI : angleDF + 2*Math.PI;
+            }
+            ctx.beginPath(); ctx.arc(D.x, D.y, 35, startAngle, endAngle);
+            ctx.strokeStyle = colorAngle;
+            ctx.lineWidth = (highlightPart.includes('angle') || highlightPart === 'all') ? 4 : 2;
+            ctx.stroke();
+
+            ctx.beginPath(); ctx.arc(D.x, D.y, 6, 0, 2*Math.PI); ctx.fillStyle = '#2c3e50'; ctx.fill();
+            ctx.beginPath(); ctx.arc(E.x, E.y, 6, 0, 2*Math.PI); ctx.fill();
+            ctx.beginPath(); ctx.arc(F.x, F.y, 6, 0, 2*Math.PI); ctx.fill();
+            
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 20px Vazir';
+            ctx.shadowColor = 'rgba(0,0,0,0.5)';
+            ctx.shadowBlur = 4;
+            ctx.fillText('D', D.x - 25, D.y - 15);
+            ctx.fillText('E', E.x + 15, E.y - 15);
+            ctx.fillText('F', F.x - 10, F.y - 25);
+            ctx.shadowBlur = 0;
+        }
+
+        function playStep(step) {
+            currentStep = step;
+            document.querySelectorAll('.step-btn').forEach((btn, index) => {
+                if (index === step) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+            document.getElementById('stepDescription').textContent = steps[step].desc;
+            document.getElementById('matchIcon').textContent = step === 3 ? '✅' : '➡️';
+            drawTriangle1(ctx1, steps[step].highlight1);
+            drawTriangle2(ctx2, steps[step].highlight2);
+        }
+
+        function nextStep() { 
+            playStep((currentStep + 1) % steps.length); 
+        }
+
+        function toggleAutoPlay() {
+            const btn = document.getElementById('autoPlayBtn');
+            if (isPlayingAnim) {
+                clearInterval(autoPlayInterval);
+                isPlayingAnim = false;
+                btn.innerHTML = '<span>▶️</span> پخش خودکار';
+                btn.classList.remove('playing');
+            } else {
+                autoPlayInterval = setInterval(nextStep, 2500);
+                isPlayingAnim = true;
+                btn.innerHTML = '<span>⏸️</span> توقف';
+                btn.classList.add('playing');
+            }
+        }
+
+        function checkAnswer(qNum, answer, element) {
+            const feedback = document.getElementById(`feedback${qNum}`);
+            const correctAnswers = { 1: '4', 2: '4', 3: '1' };
+            document.querySelectorAll(`#q${qNum} .quiz-option`).forEach(btn => btn.classList.remove('correct', 'wrong'));
+            const isCorrect = (answer === correctAnswers[qNum]);
+            element.classList.add(isCorrect ? 'correct' : 'wrong');
+            feedback.className = `quiz-feedback ${isCorrect ? 'correct' : 'wrong'}`;
+        }
+
+        drawTriangle1(ctx1, 'side1');
+        drawTriangle2(ctx2, 'side1');
+        document.querySelector('.step-btn').classList.add('active');
+    </script>
+</body>
+</html>
