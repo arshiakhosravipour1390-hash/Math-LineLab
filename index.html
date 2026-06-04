@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>🏆 Math LineLab - آزمایشگاه تعاملی هم‌نهشتی مثلث‌ها</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Vazir', 'B Nazanin', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0b1a2e, #1a3b5c);
+            min-height: 100vh;
+            padding: 0;
+            overflow-x: hidden;
+        }
+        
+        .f11-card {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #2c3e50, #1a2f3f);
+            padding: 8px 15px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            color: #f39c12;
+            z-index: 99;
+            border: 1px solid #f39c12;
+            cursor: pointer;
+            transition: all 0.3s;
+            backdrop-filter: blur(8px);
+        }
+        
+        .f11-card:hover {
+            transform: scale(1.05);
+            background: #f39c12;
+            color: #1a2f3f;
+        }
+        
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .menu-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            cursor: pointer;
+            z-index: 1001;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+        }
+        
+        .menu-toggle:hover {
+            transform: scale(1.1);
+        }
+        
+        .menu-toggle span {
+            width: 25px;
+            height: 3px;
+            background: white;
+            border-radius: 3px;
+            transition: all 0.3s;
+        }
+        
+        .menu-toggle.active span:nth-child(1) {
+            transform: rotate(45deg) translate(8px, 8px);
+        }
+        
+        .menu-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+        
+        .menu-toggle.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(8px, -8px);
+        }
+        
+        .side-menu {
+            position: fixed;
+            top: 0;
+            right: -280px;
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(180deg, #1a2f3f, #0b1a2e);
+            z-index: 1000;
+            transition: right 0.3s ease;
+            padding: 80px 20px 30px;
+            box-shadow: -5px 0 30px rgba(0,0,0,0.5);
+            border-left: 2px solid #f39c12;
+        }
+        
+        .side-menu.open {
+            right: 0;
+        }
+        
+        .side-menu a {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 20px;
+            color: white;
+            text-decoration: none;
+            font-size: 1.1rem;
+            border-radius: 15px;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .side-menu a:hover {
+            background: rgba(243,156,18,0.3);
+            transform: translateX(-10px);
+        }
+        
+        .side-menu a span {
+            font-size: 1.5rem;
+        }
+        
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+            display: none;
+        }
+        
+        .overlay.show {
+            display: block;
+        }
+        
+        .music-container {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+        }
+        
+        .music-control {
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(8px);
+            padding: 6px 12px;
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid #f39c12;
+            transition: all 0.3s;
+        }
+        
+        .music-control.hidden {
+            display: none;
+        }
+        
+        .music-btn {
+            background: none;
+            border: none;
+            font-size: 0.9rem;
+            cursor: pointer;
+            color: #f39c12;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s;
+        }
+        
+        .music-btn:hover {
+            background: rgba(243,156,18,0.3);
+            transform: scale(1.05);
+        }
+        
+        .volume-slider {
+            width: 50px;
+            height: 3px;
+            -webkit-appearance: none;
+            background: rgba(255,255,255,0.3);
+            border-radius: 3px;
+            outline: none;
+            cursor: pointer;
+        }
+        
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: #f39c12;
+            cursor: pointer;
+        }
+        
+        #trackName {
+            color: #f39c12;
+            font-size: 0.6rem;
+            max-width: 80px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .music-toggle-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+            border: none;
+            font-size: 1.2rem;
+        }
+        
+        .music-toggle-icon:hover {
+            transform: scale(1.08);
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 50px;
+            margin-top: 20px;
+            position: relative;
+            padding: 60px 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 60px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            animation: float 6s infinite ease-in-out;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .header h1 {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #f1c40f, #e67e22, #e74c3c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+        }
+        
+        .header p {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+            color: #ecf0f1;
+        }
+        
+        .badge-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        .badge {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 12px 25px;
+            border-radius: 50px;
+            border: 2px solid #f39c12;
+            color: #f39c12;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .badge:hover {
+            background: #f39c12;
+            color: #0b1a2e;
+            transform: scale(1.05);
+        }
+        
+        .education-section {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50px;
+            padding: 60px 40px;
+            margin: 50px 0;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .education-title {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .education-steps {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+        
+        .edu-step {
+            text-align: center;
+            padding: 30px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 30px;
+            transition: all 0.4s;
+        }
+        
+        .edu-step:hover {
+            transform: translateY(-10px);
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .edu-number {
+            width: 70px;
+            height: 70px;
+            background: #f39c12;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 0 auto 20px;
+        }
+        
+        .full-training-btn {
+            text-align: center;
+            margin-top: 40px;
+        }
+        
+        .training-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .training-button:hover {
+            transform: scale(1.05);
+        }
+        
+        .quiz-section {
+            margin: 60px 0;
+        }
+        
+        .quiz-title {
+            font-size: 2.5rem;
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .quiz-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .quiz-card {
+            background: white;
+            border-radius: 40px;
+            padding: 40px 30px;
+            text-align: center;
+            transition: all 0.4s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .quiz-card:hover {
+            transform: translateY(-15px);
+        }
+        
+        .quiz-card:nth-child(1) { border-top: 8px solid #27ae60; }
+        .quiz-card:nth-child(2) { border-top: 8px solid #f55036; }
+        
+        .quiz-icon {
+            font-size: 4.5rem;
+            margin-bottom: 20px;
+        }
+        
+        .quiz-card h3 {
+            font-size: 1.8rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        .quiz-card p {
+            color: #7f8c8d;
+            font-size: 1rem;
+            margin: 15px 0;
+            line-height: 1.6;
+        }
+        
+        .quiz-start-btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 15px;
+        }
+        
+        .quiz-card:nth-child(2) .quiz-start-btn {
+            background: linear-gradient(135deg, #f55036, #e03a1a);
+        }
+        
+        .quiz-start-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .commercial-section {
+            background: linear-gradient(135deg, #1e2b3a, #2c3e50);
+            border-radius: 50px;
+            padding: 50px;
+            margin: 50px 0;
+            text-align: center;
+        }
+        
+        .commercial-title {
+            font-size: 2rem;
+            color: #f39c12;
+            margin-bottom: 20px;
+        }
+        
+        .commercial-desc {
+            color: white;
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto 30px;
+            line-height: 1.8;
+        }
+        
+        .commercial-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            background: rgba(255,255,255,0.1);
+            padding: 20px 30px;
+            border-radius: 30px;
+            min-width: 120px;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #f39c12;
+        }
+        
+        .stat-label {
+            color: white;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        .web-card {
+            background: linear-gradient(135deg, #0f3460, #16213e);
+            border-radius: 40px;
+            padding: 30px;
+            margin-top: 30px;
+            border: 2px solid #f39c12;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .web-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(243,156,18,0.2);
+        }
+        
+        .web-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .web-title {
+            color: #f39c12;
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+        
+        .web-url {
+            color: white;
+            font-size: 0.9rem;
+            word-break: break-all;
+            background: rgba(0,0,0,0.3);
+            padding: 10px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            margin: 10px 0;
+        }
+        
+        .copy-notice {
+            color: #2ecc71;
+            font-size: 0.75rem;
+            margin-top: 8px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .copy-notice.show {
+            opacity: 1;
+        }
+        
+        .web-note {
+            color: #aaa;
+            font-size: 0.8rem;
+            margin-top: 10px;
+        }
+        
+        .future-note {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 30px;
+        }
+        
+        .future-note p {
+            color: #ecf0f1;
+            font-size: 0.9rem;
+        }
+        
+        .applications-section {
+            margin: 50px 0;
+            padding: 50px;
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            border-radius: 60px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .applications-section::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(243,156,18,0.05) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        
+        .applications-title {
+            font-size: 2rem;
+            color: white;
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+        
+        .applications-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+        }
+        
+        .app-card {
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .app-card:hover {
+            transform: translateY(-15px) scale(1.02);
+            border-color: rgba(243,156,18,0.5);
+            box-shadow: 0 25px 45px rgba(243,156,18,0.2);
+        }
+        
+        .app-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            transition: all 0.5s;
+        }
+        
+        .app-card:hover .app-image {
+            transform: scale(1.05);
+        }
+        
+        .app-content {
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .app-icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+            display: inline-block;
+        }
+        
+        .app-card h3 {
+            font-size: 1.3rem;
+            color: #f39c12;
+            margin-bottom: 10px;
+        }
+        
+        .app-card p {
+            color: rgba(255,255,255,0.8);
+            font-size: 0.85rem;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+        
+        .app-example {
+            display: inline-block;
+            background: rgba(243,156,18,0.2);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            color: #f39c12;
+            font-weight: bold;
+        }
+        
+        .docs-section {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin: 50px 0;
+        }
+        
+        .doc-card {
+            background: white;
+            border-radius: 30px;
+            padding: 35px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .doc-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .doc-icon {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .doc-card h3 {
+            font-size: 1.5rem;
+            color: #2c3e50;
+        }
+        
+        footer {
+            text-align: center;
+            color: white;
+            padding: 30px;
+        }
+        
+        @media (max-width: 1000px) {
+            .applications-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .quiz-cards, .docs-section {
+                grid-template-columns: 1fr;
+            }
+            .education-steps {
+                grid-template-columns: 1fr;
+            }
+            .commercial-stats {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .applications-grid {
+                grid-template-columns: 1fr;
+            }
+            .header h1 { font-size: 2.5rem; }
+            .quiz-card h3 { font-size: 1.4rem; }
+        }
+    </style>
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v33.003/dist/font-face.css" rel="stylesheet">
+</head>
+<body>
+
+    <div class="f11-card" onclick="toggleFullscreen()">💡 F11 | تمام صفحه</div>
+
+    <div class="menu-toggle" id="menuToggle">
+        <span></span><span></span><span></span>
+    </div>
+    
+    <div class="side-menu" id="sideMenu">
+        <a data-section="home"><span>🏠</span> صفحه اصلی</a>
+        <a data-section="education"><span>📚</span> آموزش هم‌نهشتی</a>
+        <a data-section="quiz"><span>🎯</span> سوالات تعاملی</a>
+        <a onclick="window.open('source/chatbot.html', '_self'); toggleMenu();"><span>🤖</span> چت‌بات هوشمند</a>
+        <a data-section="docs"><span>📄</span> مستندات</a>
+        <a data-section="apps"><span>💡</span> کاربردها</a>
+        <a data-section="commercial"><span>📊</span> تجاری‌سازی</a>
+    </div>
+    <div class="overlay" id="overlay"></div>
+
+    <div class="music-container">
+        <div class="music-control hidden" id="musicControl">
+            <button class="music-btn" id="musicToggle">🔇</button>
+            <button class="music-btn" id="nextTrackBtn">⏩</button>
+            <span id="trackName">آهنگ</span>
+            <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1" step="0.01" value="0.1">
+        </div>
+        <button class="music-toggle-icon" id="musicPanelToggle" title="باز کردن پنل موزیک">🎵</button>
+    </div>
+
+    <div class="main-container">
+        <div class="header" id="home">
+            <h1>🧪 Math LineLab</h1>
+            <p>آزمایشگاه تعاملی هم‌نهشتی مثلث‌ها | یادگیری عمیق مفاهیم هندسه با فناوری روز</p>
+            <div class="badge-container">
+                <span class="badge">🎯 ویژه جشنواره نوجوان خوارزمی</span>
+                <span class="badge">📐 مفهوم پرچالش هم‌نهشتی</span>
+                <span class="badge">🏆 منطبق با ۱۶ شاخص داوری</span>
+                <span class="badge">🤖 مجهز به هوش مصنوعی</span>
+            </div>
+        </div>
+
+        <div class="education-section" id="education">
+            <h2 class="education-title">📐 آموزش هم‌نهشتی مثلث‌ها</h2>
+            <div class="education-steps">
+                <div class="edu-step"><div class="edu-number">۱</div><h3>ضلع - زاویه - ضلع (SAS)</h3><p>اگر دو ضلع و زاویه بین آنها برابر باشد → هم‌نهشتی</p></div>
+                <div class="edu-step"><div class="edu-number">۲</div><h3>زاویه - ضلع - زاویه (ASA)</h3><p>اگر دو زاویه و ضلع بین آنها برابر باشد → هم‌نهشتی</p></div>
+                <div class="edu-step"><div class="edu-number">۳</div><h3>ضلع - ضلع - ضلع (SSS)</h3><p>اگر هر سه ضلع برابر باشد → هم‌نهشتی</p></div>
+            </div>
+            <div class="full-training-btn">
+                <a href="source/full-training.html" class="training-button">📚 آموزش کامل هم‌نهشتی 🔍</a>
+            </div>
+        </div>
+
+        <div class="quiz-section" id="quiz">
+            <h2 class="quiz-title">🎯 سوالات تعاملی</h2>
+            <div class="quiz-cards">
+                <div class="quiz-card" onclick="window.open('source/quiz-fasl3_1.html', '_self')">
+                    <div class="quiz-icon">📚</div>
+                    <h3>سه سوال تعاملی</h3>
+                    <p>سه سطح مبتدی، متوسط و پیشرفته</p>
+                    <button class="quiz-start-btn">شروع سوالات →</button>
+                </div>
+                <div class="quiz-card" onclick="window.open('source/chatbot.html', '_self')">
+                    <div class="quiz-icon">🤖</div>
+                    <h3>دستیار هوشمند</h3>
+                    <p>چت‌بات مجهز به هوش مصنوعی Groq | پاسخ به هر سوال ریاضی با مدل Llama 3.3</p>
+                    <button class="quiz-start-btn">شروع گفتگو →</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="commercial-section" id="commercial">
+            <h2 class="commercial-title">📊 قابلیت تجاری‌سازی</h2>
+            <p class="commercial-desc">پروژه Math LineLab آماده استفاده در تمام مدارس کشور با قابلیت توسعه به بانک سوال هوشمند و بهینه‌سازی برای موبایل و تبلت</p>
+            <div class="commercial-stats">
+                <div class="stat-item"><div class="stat-number">۵M+</div><div class="stat-label">دانش‌آموز هدف</div></div>
+                <div class="stat-item"><div class="stat-number">۱۰۰%</div><div class="stat-label">قابلیت توسعه</div></div>
+                <div class="stat-item"><div class="stat-number">۳</div><div class="stat-label">سطح آموزشی</div></div>
+                <div class="stat-item"><div class="stat-number">۹</div><div class="stat-label">تساوی تعاملی</div></div>
+            </div>
+            <div class="web-card" id="webCard">
+                <div class="web-icon">🌐</div>
+                <div class="web-title">دسترسی تحت وب از سراسر کشور</div>
+                <div class="web-url" id="projectUrl">arshiakhosravipour1390-hash.github.io/math-linelab/</div>
+                <div class="copy-notice" id="copyNotice">✅ لینک کپی شد!</div>
+                <div class="web-note">✨ قابل اجرا روی تمامی پلتفرم‌ها (موبایل، تبلت، کامپیوتر)</div>
+            </div>
+            <div class="future-note">
+                <p>🚀 <strong>برنامه مرحله استانی و کشوری:</strong> خرید دامنه اختصاصی (math-linelab.ir)، بانک سوال هوشمند با AI، قابلیت آپلود عکس در چت‌بات، گزارش پیشرفت معلم، مسابقه آنلاین و نسخه آفلاین (PWA)</p>
+            </div>
+        </div>
+
+        <!-- ========== کاربردها با لینک داخلی source/images/ ========== -->
+        <div class="applications-section" id="apps">
+            <h2 class="applications-title">🏗️ کاربردهای هم‌نهشتی در زندگی</h2>
+            <div class="applications-grid">
+                <div class="app-card">
+                    <img class="app-image" src="source/images/khaju-bridge.jpg" alt="پل خواجو اصفهان">
+                    <div class="app-content">
+                        <div class="app-icon">🏛️</div>
+                        <h3>معماری</h3>
+                        <p>در ساخت پل‌ها، برج‌ها و سازه‌های بزرگ، از هم‌نهشتی برای اطمینان از یکسان بودن قطعات استفاده می‌شود.</p>
+                        <span class="app-example">مثال: پل خواجو اصفهان</span>
+                    </div>
+                </div>
+                <div class="app-card">
+                    <img class="app-image" src="source/images/engineering.jpg" alt="قطعات صنعتی">
+                    <div class="app-content">
+                        <div class="app-icon">⚙️</div>
+                        <h3>مهندسی</h3>
+                        <p>در تولید انبوه قطعات صنعتی، هم‌نهشتی قطعات اطمینان از تعویض‌پذیری آن‌ها را تضمین می‌کند.</p>
+                        <span class="app-example">مثال: قطعات خودرو و ماشین‌آلات</span>
+                    </div>
+                </div>
+                <div class="app-card">
+                    <img class="app-image" src="source/images/sheikh-lotfollah.jpg" alt="کاشی‌کاری مسجد شیخ لطف‌الله">
+                    <div class="app-content">
+                        <div class="app-icon">🎨</div>
+                        <h3>هنر و کاشی‌کاری</h3>
+                        <p>در کاشی‌کاری مساجد و بناهای تاریخی، از هم‌نهشتی برای تکرار الگوهای متقارن استفاده می‌شود.</p>
+                        <span class="app-example">مثال: مسجد شیخ لطف‌الله</span>
+                    </div>
+                </div>
+                <div class="app-card">
+                    <img class="app-image" src="source/images/snowflake.jpg" alt="بلور برف">
+                    <div class="app-content">
+                        <div class="app-icon">❄️</div>
+                        <h3>طبیعت</h3>
+                        <p>بلورهای برف، برگ‌ها و بسیاری از پدیده‌های طبیعی دارای الگوهای هم‌نهشت هستند.</p>
+                        <span class="app-example">مثال: ساختار بلورهای نمک و برف</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="docs-section" id="docs">
+            <div class="doc-card" onclick="window.open('source/notebook.html', '_self')">
+                <div class="doc-icon">📓</div><h3>دفتر کارنما</h3>
+            </div>
+            <div class="doc-card" onclick="window.open('source/identity.html', '_self')">
+                <div class="doc-icon">📋</div><h3>شناسنامه اثر</h3>
+            </div>
+            <div class="doc-card" onclick="window.open('Help.html', '_self')">
+                <div class="doc-icon">❓</div><h3>راهنما</h3>
+            </div>
+        </div>
+
+        <footer>
+            <p>طراحی شده برای دوازدهمین دوره جشنواره نوجوان خوارزمی | محور ریاضی و فناوری اطلاعات</p>
+            <p>✨ منطبق بر ۱۶ شاخص داوری - دارای چت‌بات هوشمند ✨</p>
+            <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.2); font-size: 0.8rem; line-height: 1.8;">
+                <p>🧪 <strong>Math LineLab</strong> | ساخته شده توسط <strong>عرشیا خسروی پور</strong></p>
+                <p>📄 کلیه حقوق مادی و معنوی این اثر متعلق به سازنده می‌باشد.</p>
+            </div>
+        </footer>
+    </div>
+
+    <audio id="bgMusic" loop preload="auto"></audio>
+
+    <script>
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+            else document.exitFullscreen();
+        }
+        
+        const webCard = document.getElementById('webCard');
+        const projectUrl = document.getElementById('projectUrl').innerText;
+        const copyNotice = document.getElementById('copyNotice');
+        
+        webCard.addEventListener('click', (e) => {
+            window.open('https://' + projectUrl, '_blank');
+            navigator.clipboard.writeText(projectUrl).then(() => {
+                copyNotice.classList.add('show');
+                setTimeout(() => copyNotice.classList.remove('show'), 2000);
+            }).catch(() => alert('لینک: ' + projectUrl));
+        });
+        
+        const menuToggle = document.getElementById('menuToggle');
+        const sideMenu = document.getElementById('sideMenu');
+        const overlay = document.getElementById('overlay');
+        function toggleMenu() {
+            menuToggle.classList.toggle('active');
+            sideMenu.classList.toggle('open');
+            overlay.classList.toggle('show');
+        }
+        menuToggle.addEventListener('click', toggleMenu);
+        overlay.addEventListener('click', toggleMenu);
+        
+        function scrollToSection(sectionId) {
+            const element = document.getElementById(sectionId);
+            if (element) element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            toggleMenu();
+        }
+        document.querySelectorAll('.side-menu a[data-section]').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const sectionId = link.getAttribute('data-section');
+                if (sectionId) scrollToSection(sectionId);
+            });
+        });
+        
+        const musicControl = document.getElementById('musicControl');
+        const musicPanelToggle = document.getElementById('musicPanelToggle');
+        let isMusicPanelOpen = false;
+        musicPanelToggle.addEventListener('click', () => {
+            if (isMusicPanelOpen) {
+                musicControl.classList.add('hidden');
+                musicPanelToggle.innerHTML = '🎵';
+                musicPanelToggle.style.opacity = '0.8';
+            } else {
+                musicControl.classList.remove('hidden');
+                musicPanelToggle.innerHTML = '🔊';
+                musicPanelToggle.style.opacity = '1';
+            }
+            isMusicPanelOpen = !isMusicPanelOpen;
+        });
+        
+        const bgMusic = document.getElementById('bgMusic');
+        const musicToggleBtn = document.getElementById('musicToggle');
+        const nextTrackBtn = document.getElementById('nextTrackBtn');
+        const trackNameSpan = document.getElementById('trackName');
+        const volumeSlider = document.getElementById('volumeSlider');
+        let currentTrackIndex = 0, isMusicPlaying = false;
+        const playlist = [
+            { name: "🎹 ملودی 1", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
+            { name: "🎸 ملودی 2", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
+            { name: "🪕 ملودی 3", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" },
+            { name: "🎻 ملودی 4", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3" }
+        ];
+        function saveMusicState() {
+            localStorage.setItem('musicPlaying', isMusicPlaying);
+            localStorage.setItem('musicTime', bgMusic.currentTime);
+            localStorage.setItem('musicVolume', bgMusic.volume);
+            localStorage.setItem('musicTrackIndex', currentTrackIndex);
+        }
+        function loadMusicState() {
+            const savedPlaying = localStorage.getItem('musicPlaying');
+            const savedTime = localStorage.getItem('musicTime');
+            const savedVolume = localStorage.getItem('musicVolume');
+            const savedTrackIndex = localStorage.getItem('musicTrackIndex');
+            if (savedTrackIndex !== null) currentTrackIndex = parseInt(savedTrackIndex);
+            loadTrack(currentTrackIndex, false);
+            if (savedVolume !== null) { bgMusic.volume = parseFloat(savedVolume); volumeSlider.value = savedVolume; }
+            else { bgMusic.volume = 0.1; volumeSlider.value = 0.1; }
+            if (savedPlaying === 'true' && isMusicPanelOpen) {
+                isMusicPlaying = true;
+                bgMusic.currentTime = parseFloat(savedTime || 0);
+                bgMusic.play().catch(() => {});
+                musicToggleBtn.innerHTML = '🔊';
+            } else {
+                isMusicPlaying = false;
+                musicToggleBtn.innerHTML = '🔇';
+                bgMusic.pause();
+            }
+        }
+        function loadTrack(index, autoPlay = true) {
+            const track = playlist[index];
+            bgMusic.src = track.url;
+            trackNameSpan.textContent = track.name;
+            if (autoPlay && isMusicPlaying) bgMusic.play().catch(() => {});
+            saveMusicState();
+        }
+        function nextTrack() {
+            currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
+            loadTrack(currentTrackIndex);
+            if (!isMusicPlaying) { isMusicPlaying = true; bgMusic.play().catch(() => {}); musicToggleBtn.innerHTML = '🔊'; }
+            saveMusicState();
+        }
+        bgMusic.addEventListener('ended', () => nextTrack());
+        bgMusic.addEventListener('timeupdate', () => saveMusicState());
+        musicToggleBtn.addEventListener('click', () => {
+            if (isMusicPlaying) { bgMusic.pause(); musicToggleBtn.innerHTML = '🔇'; }
+            else { if (!bgMusic.src || bgMusic.src === window.location.href) loadTrack(currentTrackIndex); bgMusic.play().catch(() => {}); musicToggleBtn.innerHTML = '🔊'; }
+            isMusicPlaying = !isMusicPlaying;
+            saveMusicState();
+        });
+        nextTrackBtn.addEventListener('click', () => nextTrack());
+        volumeSlider.addEventListener('input', (e) => { bgMusic.volume = parseFloat(e.target.value); saveMusicState(); });
+        loadMusicState();
+        window.addEventListener('beforeunload', () => saveMusicState());
+    </script>
+</body>
+</html>
